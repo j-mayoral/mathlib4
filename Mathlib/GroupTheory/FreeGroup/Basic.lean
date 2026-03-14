@@ -796,7 +796,12 @@ theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map f
   rw [← MonoidHom.range_eq_top, range_map, hf.range_eq, Set.image_univ, closure_range_of]
 
 theorem map_injective (hf : Function.Injective f) : Function.Injective (map f) := by
-  sorry
+  cases isEmpty_or_nonempty α with
+  | inr a =>
+  rw [Function.injective_iff_hasLeftInverse]
+  use map (Function.invFun f)
+  simp [Function.LeftInverse, map.comp, Function.invFun_comp hf]
+  | inl _ => exact Function.injective_of_subsingleton _
 
 /-- Equivalent types give rise to multiplicatively equivalent free groups.
 
