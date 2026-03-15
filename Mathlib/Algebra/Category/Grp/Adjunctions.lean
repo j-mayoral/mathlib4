@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Category.Grp.Preadditive
 public import Mathlib.GroupTheory.FreeAbelianGroup
 public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Limits.Types.Coproducts
+public import Mathlib.Algebra.Category.Grp.EpiMono
 
 /-!
 # Adjunctions regarding the category of (abelian) groups
@@ -89,7 +90,7 @@ the monomorphisms in `AddCommGroup` are just the injective functions.
 (This proof works in all universes.)
 -/
 example {G H : AddCommGrpCat.{u}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
-  (mono_iff_injective (f : G → H)).mp (Functor.map_mono (forget AddCommGrpCat) f)
+  (CategoryTheory.mono_iff_injective (f : G → H)).mp (Functor.map_mono (forget AddCommGrpCat) f)
 
 instance : (free.{u}).PreservesMonomorphisms where
   preserves {X Y} f _ := by
@@ -98,7 +99,7 @@ instance : (free.{u}).PreservesMonomorphisms where
       intros
       apply (IsInitial.isInitialObj free _
         ((Types.initial_iff_empty X).2 hX).some).isZero.eq_of_tgt
-    · have hf : Function.Injective f := by rwa [← mono_iff_injective]
+    · have hf : Function.Injective f := by rwa [← CategoryTheory.mono_iff_injective]
       obtain ⟨g, hg⟩ := hf.hasLeftInverse
       have : IsSplitMono f := IsSplitMono.mk' { retraction := g }
       infer_instance
@@ -128,6 +129,13 @@ def adj : free ⊣ forget GrpCat.{u} :=
 
 instance : (forget GrpCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩
+
+instance : (GrpCat.free.{u}).PreservesMonomorphisms where
+  preserves {X Y} f h := by
+    rw [GrpCat.mono_iff_injective]
+    have hf : Function.Injective f := by
+      simpa [CategoryTheory.mono_iff_injective] using h
+    simpa using FreeGroup.map_injective hf
 
 section Abelianization
 
