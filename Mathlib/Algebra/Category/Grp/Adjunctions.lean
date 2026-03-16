@@ -130,6 +130,13 @@ def adj : free ⊣ forget GrpCat.{u} :=
 instance : (forget GrpCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩
 
+instance free.faithful : (free.{u}).Faithful where
+  map_injective := by
+    intro α β f g h
+    ext x
+    apply FreeGroup.of_injective
+    simpa using congrArg (fun h => h (FreeGroup.of x)) h
+
 instance : (GrpCat.free.{u}).PreservesMonomorphisms where
   preserves {X Y} f h := by
     rw [GrpCat.mono_iff_injective]
